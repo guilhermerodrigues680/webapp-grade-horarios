@@ -1,7 +1,24 @@
-## TO-DO
+# webapp-grade-horarios
 
-- Fazer efeitos de hover, active, responsividade
-- Fazer classe de horario ativo
-- Escolher Entre SVG ou CSS no icone do horário
-- Adicionar Vue.js
-- Criar modelo de dados de entrada
+## Project setup
+```
+npm install
+```
+
+### Compiles and hot-reloads for development
+```
+npm run serve
+```
+
+### Compiles and minifies for production
+```
+npm run build
+```
+
+### Lints and fixes files
+```
+npm run lint
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
