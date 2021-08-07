@@ -1,6 +1,6 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
-import GradeHorarios from "@/views/GradeHorarios.vue";
+import GradeHorarios from "@/views/grade-horarios/GradeHorarios.vue";
 
 Vue.use(VueRouter);
 
