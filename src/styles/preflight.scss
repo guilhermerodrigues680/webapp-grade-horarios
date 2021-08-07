@@ -1,0 +1,32 @@
+/*  Removes all of the default margins from elements */
+blockquote,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+figure,
+p,
+pre {
+  margin: 0;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* OBS: scroll-behavior via CSS não funciona no mobile iOS */
+/* Enable smooth scrolling on the whole document */
+/* Disable smooth scrolling when users have prefers-reduced-motion enabled */
+/* html {
+	scroll-behavior: smooth;
+}
+@media screen and (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+} */
