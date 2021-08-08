@@ -2,6 +2,7 @@
   <div class="periodo-gh">
     <div class="periodo-gh__botoes">
       <svg
+        @click="prevWeek()"
         width="30"
         height="30"
         viewBox="0 0 30 30"
@@ -12,9 +13,14 @@
         <path d="M19 7L11 15L19 23" stroke="white" stroke-width="2" />
       </svg>
 
-      <span class="periodo-gh__periodo">7-13 Agosto</span>
+      <!-- <span class="periodo-gh__periodo">{{ currentMonday }}7-13 Agosto</span> -->
+      <span class="periodo-gh__periodo">
+        {{ currentSunday.getDate() + 1 }} - {{ currentSaturday.getDate() }}
+        {{ currentSaturday | monthNameShort }}
+      </span>
 
       <svg
+        @click="nextWeek()"
         width="30"
         height="30"
         viewBox="0 0 30 30"
@@ -28,27 +34,27 @@
     <div class="periodo-gh__calendario">
       <span class="periodo-gh__item">
         <span>SEG</span>
-        <span>7</span>
+        <span>{{ currentSunday | sumDays(1) | getDate }}</span>
       </span>
       <span class="periodo-gh__item periodo-gh__item--active">
         <span>TER</span>
-        <span>8</span>
+        <span>{{ currentSunday | sumDays(2) | getDate }}</span>
       </span>
       <span class="periodo-gh__item">
         <span>QUA</span>
-        <span>9</span>
+        <span>{{ currentSunday | sumDays(3) | getDate }}</span>
       </span>
       <span class="periodo-gh__item">
         <span>QUI</span>
-        <span>10</span>
+        <span>{{ currentSunday | sumDays(4) | getDate }}</span>
       </span>
       <span class="periodo-gh__item">
         <span>SEX</span>
-        <span>11</span>
+        <span>{{ currentSunday | sumDays(5) | getDate }}</span>
       </span>
       <span class="periodo-gh__item">
         <span>SAB</span>
-        <span>12</span>
+        <span>{{ currentSunday | sumDays(6) | getDate }}</span>
       </span>
     </div>
   </div>
@@ -56,9 +62,36 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import DateUtils from "@/service/DateUtils";
 
-@Component
-export default class PeriodoGH extends Vue {}
+@Component({
+  filters: {
+    monthNameShort: DateUtils.monthNameShort,
+    sumDays: DateUtils.sumDays,
+    getDate(value: Date): number {
+      return value.getDate();
+    },
+  },
+})
+export default class PeriodoGH extends Vue {
+  private currentSunday = DateUtils.getSunday(new Date());
+
+  get currentSaturday(): Date {
+    return DateUtils.getSaturday(this.currentSunday);
+  }
+
+  prevWeek(): void {
+    const date = new Date(this.currentSunday);
+    date.setDate(date.getDate() - 7);
+    this.currentSunday = date;
+  }
+
+  nextWeek(): void {
+    const date = new Date(this.currentSunday);
+    date.setDate(date.getDate() + 7);
+    this.currentSunday = date;
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -73,6 +106,10 @@ export default class PeriodoGH extends Vue {}
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    & > svg {
+      cursor: pointer;
+    }
 
     .periodo-gh__periodo {
       font-family: Poppins;
@@ -98,6 +135,7 @@ export default class PeriodoGH extends Vue {}
       flex-direction: column;
       align-items: center;
       row-gap: 0.25rem;
+      cursor: pointer;
 
       &--active {
         color: #0083a2;
