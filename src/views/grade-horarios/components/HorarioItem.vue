@@ -1,11 +1,18 @@
 <template>
   <!-- Item de Horario -->
-  <div class="horario__item" :class="[classeTurno]">
-    <span class="horario__icon" ref="horarioIcon">
+  <div
+    class="horario__item"
+    :class="[
+      classeTurno,
+      {
+        'horario__item--aula-ocorrendo': percentualAula === 0 || percentualAula,
+      },
+    ]"
+  >
+    <span class="horario__icon">
       <span class="horario__icon__linha"></span>
       <span
         v-show="percentualAula === 0 || percentualAula"
-        ref="horarioIconAulaOcorrendo"
         class="horario__icon__linha__aula-ocorrendo"
         :style="{ '--percentual-aula': `${percentualAula}%` }"
       ></span>
@@ -59,6 +66,14 @@ export default class HorarioItem extends Vue {
 .horario__item {
   display: flex;
   column-gap: 0.5rem;
+  padding: 0.5rem 0.375rem;
+  border: 0.125rem solid transparent;
+
+  &--aula-ocorrendo {
+    background: rgba(#ff9d28, 0.12);
+    border-color: #ff9d28;
+    border-radius: 0.5rem;
+  }
 
   .horario__icon {
     position: relative;

@@ -26,6 +26,5 @@ export default class Horario extends Vue {
   padding: 0 1.875rem;
   display: flex;
   flex-direction: column;
-  row-gap: 1rem;
 }
 </style>
