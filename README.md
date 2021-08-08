@@ -27,3 +27,10 @@ npm run lint
 ### Customize configuration
 
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+## TO-DOs
+
+- Criar filtro de dias no horario
+- Alterar periodo
+- Cadastrar horarios / salvar
+- Versao dekstop
