@@ -1,6 +1,6 @@
 module.exports = {
   outputDir: "docs",
-  publicPath: "",
+  publicPath: "/webapp-grade-horarios/",
 
   chainWebpack: (config) => {
     // vue inspect --plugin html
