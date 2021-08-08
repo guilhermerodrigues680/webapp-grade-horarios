@@ -17,21 +17,16 @@
         :style="{ '--percentual-aula': `${percentualAula}%` }"
       ></span>
     </span>
-
     <span class="horario__inicio-fim">
       <span>9:30</span>
       <span>9:30</span>
     </span>
-
     <span class="horario__card horario__item">
       <span class="horario__card__local">Sala X Predio 22</span>
       <span class="horario__card__turma">1263.1.01</span>
       <span class="horario__card__disciplina">Fundamentos de engenharia</span>
     </span>
   </div>
-  <!-- FIXME: Fazer codicional -->
-  <!-- Espaco entre Horarios -->
-  <!-- <span class="horario__item__espaco-horarios"></span> -->
 </template>
 
 <script lang="ts">
@@ -233,28 +228,6 @@ export default class HorarioItem extends Vue {
         color: #ffffff;
       }
     }
-  }
-}
-
-.horario__item__espaco-horarios {
-  display: flex;
-  align-items: center;
-
-  &::before {
-    content: "";
-    display: block;
-    height: 0.625rem;
-    width: 0.625rem;
-    background: #ff9d28;
-    border-radius: 50%;
-  }
-
-  &::after {
-    flex: 1;
-    content: "";
-    display: block;
-    height: 0.125rem;
-    background: #ff9d28;
   }
 }
 </style>
