@@ -18,38 +18,65 @@
       ></span>
     </span>
     <span class="horario__inicio-fim">
-      <span>9:30</span>
-      <span>9:30</span>
+      <span>{{ horarioAula.DataInicio | onlyDate }}</span>
+      <span>{{ horarioAula.DataFim | onlyDate }}</span>
     </span>
     <span class="horario__card horario__item">
-      <span class="horario__card__local">Sala X Predio 22</span>
-      <span class="horario__card__turma">1263.1.01</span>
-      <span class="horario__card__disciplina">Fundamentos de engenharia</span>
+      <span class="horario__card__local">{{ horarioAula.LocalAula }}</span>
+      <span class="horario__card__turma">{{ horarioAula.CodTurmaExibicao }}</span>
+      <span class="horario__card__disciplina">{{ horarioAula.NomeDisciplina }}</span>
     </span>
   </div>
 </template>
 
 <script lang="ts">
+import { HorarioAula } from "@/models/HorarioAula";
 import { Component, Prop, Vue } from "vue-property-decorator";
+import { Store } from "@/store";
 
-@Component
+@Component({
+  filters: {
+    onlyDate(value: Date): string {
+      const h = value.getHours();
+      const m = value.getMinutes().toString().padStart(2, "0");
+      return `${h}:${m}`;
+    },
+  },
+})
 export default class HorarioItem extends Vue {
-  @Prop({
-    type: String,
-    default: "manha",
-    validator(value) {
-      return ["manha", "tarde", "noite"].includes(value);
-    },
-  })
-  readonly turno!: string;
+  @Prop({ required: true })
+  readonly horarioAula!: HorarioAula;
+  private storeState = Store.state;
 
-  @Prop({
-    type: Number,
-    validator(value) {
-      return value >= 0 && value <= 100;
-    },
-  })
-  readonly percentualAula!: number;
+  get percentualAula(): number | null {
+    // map: Remapeia um número de um intervalo para outro
+    const map = (value: number, x1: number, y1: number, x2: number, y2: number) =>
+      ((value - x1) * (y2 - x2)) / (y1 - x1) + x2;
+
+    const percent = map(
+      this.storeState.now.getTime(),
+      this.horarioAula.DataInicio.getTime(),
+      this.horarioAula.DataFim.getTime(),
+      0,
+      100
+    );
+
+    if (percent < 0 || percent > 100) {
+      return null;
+    } else {
+      return percent;
+    }
+  }
+
+  get turno(): string {
+    if (this.horarioAula.DataInicio.getHours() >= 17) {
+      return "noite";
+    } else if (this.horarioAula.DataInicio.getHours() >= 12) {
+      return "tarde";
+    } else {
+      return "manha";
+    }
+  }
 
   get classeTurno(): string {
     return `horario__item--${this.turno}`;

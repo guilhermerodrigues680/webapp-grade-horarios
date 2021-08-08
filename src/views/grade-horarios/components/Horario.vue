@@ -1,9 +1,7 @@
 <template>
   <div class="horario">
-    <HorarioItem turno="manha" />
-    <HorarioVago />
-    <HorarioItem turno="tarde" />
-    <HorarioItem turno="noite" />
+    <HorarioItem v-for="(h, idx) in horariosAulas" :key="idx" :horarioAula="h" />
+    <!-- <HorarioVago /> -->
   </div>
 </template>
 
@@ -11,6 +9,8 @@
 import { Component, Vue } from "vue-property-decorator";
 import HorarioItem from "./HorarioItem.vue";
 import HorarioVago from "./HorarioVago.vue";
+import Api from "@/service/api";
+import { HorarioAula } from "@/models/HorarioAula";
 
 @Component({
   components: {
@@ -19,7 +19,12 @@ import HorarioVago from "./HorarioVago.vue";
   },
 })
 export default class Horario extends Vue {
-  private percentualAula = 49;
+  private horariosAulas: HorarioAula[] = [];
+
+  async created(): Promise<void> {
+    this.horariosAulas = await Api.getHorarios();
+    console.debug(this.horariosAulas);
+  }
 }
 </script>
 
