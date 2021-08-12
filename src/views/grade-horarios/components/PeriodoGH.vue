@@ -2,6 +2,8 @@
   <div class="periodo-gh">
     <div class="periodo-gh__botoes">
       <svg
+        class="periodo-gh__botoes__botao"
+        :class="{ 'periodo-gh__botoes__botao--disable': !canPrevWeek }"
         @click="prevWeek()"
         width="30"
         height="30"
@@ -14,11 +16,12 @@
       </svg>
 
       <span class="periodo-gh__periodo">
-        {{ currentSunday.getDate() + 1 }} - {{ currentSaturday.getDate() }}
+        {{ currentMonday.getDate() }} - {{ currentSaturday.getDate() }}
         {{ currentSaturday | monthNameShort }}
       </span>
 
       <svg
+        class="periodo-gh__botoes__botao"
         @click="nextWeek()"
         width="30"
         height="30"
@@ -32,46 +35,13 @@
     </div>
     <div class="periodo-gh__calendario">
       <span
+        v-for="day in 6"
+        :key="day"
         class="periodo-gh__item"
-        :class="{ 'periodo-gh__item--active': isToday(sumDays(currentSunday, 1)) }"
+        :class="{ 'periodo-gh__item--active': isToday(sumDays(startOfWeekDateRef, day)) }"
       >
-        <span>SEG</span>
-        <span>{{ currentSunday | sumDays(1) | getDate }}</span>
-      </span>
-      <span
-        class="periodo-gh__item"
-        :class="{ 'periodo-gh__item--active': isToday(sumDays(currentSunday, 2)) }"
-      >
-        <span>TER</span>
-        <span>{{ currentSunday | sumDays(2) | getDate }}</span>
-      </span>
-      <span
-        class="periodo-gh__item"
-        :class="{ 'periodo-gh__item--active': isToday(sumDays(currentSunday, 3)) }"
-      >
-        <span>QUA</span>
-        <span>{{ currentSunday | sumDays(3) | getDate }}</span>
-      </span>
-      <span
-        class="periodo-gh__item"
-        :class="{ 'periodo-gh__item--active': isToday(sumDays(currentSunday, 4)) }"
-      >
-        <span>QUI</span>
-        <span>{{ currentSunday | sumDays(4) | getDate }}</span>
-      </span>
-      <span
-        class="periodo-gh__item"
-        :class="{ 'periodo-gh__item--active': isToday(sumDays(currentSunday, 5)) }"
-      >
-        <span>SEX</span>
-        <span>{{ currentSunday | sumDays(5) | getDate }}</span>
-      </span>
-      <span
-        class="periodo-gh__item"
-        :class="{ 'periodo-gh__item--active': isToday(sumDays(currentSunday, 6)) }"
-      >
-        <span>SAB</span>
-        <span>{{ currentSunday | sumDays(6) | getDate }}</span>
+        <span>{{ sumDays(startOfWeekDateRef, day) | dayOfWeek }}</span>
+        <span>{{ sumDays(startOfWeekDateRef, day).getDate() }}</span>
       </span>
     </div>
   </div>
@@ -79,55 +49,66 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import DateUtils from "@/service/DateUtils";
 import { Store } from "@/store";
+import { ptBR } from "date-fns/locale";
+import {
+  format,
+  startOfWeek,
+  nextMonday,
+  nextSaturday,
+  addDays,
+  addWeeks,
+  subWeeks,
+  isAfter,
+  isSameDay,
+} from "date-fns";
+
+console.debug(Store);
 
 @Component({
   filters: {
-    monthNameShort: DateUtils.monthNameShort,
-    sumDays: DateUtils.sumDays,
-    getDate(value: Date): number {
-      return value.getDate();
+    monthNameShort(value: Date): string {
+      return format(value, "LLL", { locale: ptBR }).toUpperCase();
+    },
+    dayOfWeek(value: Date): string {
+      return format(value, "EEEEEE", { locale: ptBR }).toUpperCase();
     },
   },
 })
 export default class PeriodoGH extends Vue {
   private storeState = Store.state;
-  private currentSunday = DateUtils.getSunday(new Date());
-  private sumDays = DateUtils.sumDays;
+  private startOfWeekDateRef = startOfWeek(this.storeState.now);
+  private sumDays = addDays;
 
-  get currentSaturday(): Date {
-    return DateUtils.getSaturday(this.currentSunday);
+  private get currentMonday(): Date {
+    return nextMonday(this.startOfWeekDateRef);
+  }
+
+  private get currentSaturday(): Date {
+    return nextSaturday(this.startOfWeekDateRef);
+  }
+
+  private get canPrevWeek(): boolean {
+    const startOfWeekDate = startOfWeek(this.storeState.now);
+    const prevStartOfWeekDate = subWeeks(this.startOfWeekDateRef, 1);
+    return (
+      isAfter(prevStartOfWeekDate, startOfWeekDate) ||
+      isSameDay(prevStartOfWeekDate, startOfWeekDate)
+    );
   }
 
   prevWeek(): void {
-    // const today = new Date();
-    const today = this.storeState.now;
-    const todaySunday = DateUtils.getSunday(today);
-    const date = new Date(this.currentSunday);
-    date.setDate(date.getDate() - 7);
-    const dateSunday = DateUtils.getSunday(date);
-
-    const dateSundayIsAfterTodaySunday = dateSunday >= todaySunday;
-    if (dateSundayIsAfterTodaySunday) {
-      this.currentSunday = date;
+    if (this.canPrevWeek) {
+      this.startOfWeekDateRef = subWeeks(this.startOfWeekDateRef, 1);
     }
   }
 
   nextWeek(): void {
-    const date = new Date(this.currentSunday);
-    date.setDate(date.getDate() + 7);
-    this.currentSunday = date;
+    this.startOfWeekDateRef = addWeeks(this.startOfWeekDateRef, 1);
   }
 
   isToday(date: Date): boolean {
-    // const today = new Date();
-    const today = this.storeState.now;
-    return (
-      date.getDate() == today.getDate() &&
-      date.getMonth() == today.getMonth() &&
-      date.getFullYear() == today.getFullYear()
-    );
+    return isSameDay(date, this.storeState.now);
   }
 }
 </script>
@@ -145,8 +126,15 @@ export default class PeriodoGH extends Vue {
     justify-content: space-between;
     align-items: center;
 
-    & > svg {
+    .periodo-gh__botoes__botao {
       cursor: pointer;
+
+      &--disable {
+        cursor: no-drop;
+        circle {
+          fill: #ececec;
+        }
+      }
     }
 
     .periodo-gh__periodo {
