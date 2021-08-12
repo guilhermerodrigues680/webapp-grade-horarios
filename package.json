@@ -10,6 +10,7 @@
   "dependencies": {
     "@fontsource/poppins": "^4.5.0",
     "core-js": "^3.6.5",
+    "date-fns": "^2.23.0",
     "modern-normalize": "^1.1.0",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
