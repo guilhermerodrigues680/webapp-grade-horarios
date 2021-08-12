@@ -10,7 +10,8 @@ class Store {
     console.debug("Criada instância Store");
     this.debug = false;
     this.state = {
-      now: new Date("2021-08-02T07:50:00"),
+      // now: new Date("2021-08-02T07:50:00"),
+      now: new Date(),
     };
   }
 

@@ -37,7 +37,7 @@ export default class DateUtils {
   }
 
   public static sumDays(d: Date, days: number): Date {
-    console.debug(d, days);
+    // console.debug(d, days);
     const date = new Date(d);
     date.setDate(date.getDate() + days);
     return date;

@@ -10,4 +10,9 @@ module.exports = {
       return args;
     });
   },
+
+  // Vue CLI inside a container
+  devServer: {
+    public: "8080-amber-snail-5gw7of9g.ws-us15.gitpod.io",
+  },
 };

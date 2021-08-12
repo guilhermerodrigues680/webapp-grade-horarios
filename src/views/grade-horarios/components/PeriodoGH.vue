@@ -13,7 +13,6 @@
         <path d="M19 7L11 15L19 23" stroke="white" stroke-width="2" />
       </svg>
 
-      <!-- <span class="periodo-gh__periodo">{{ currentMonday }}7-13 Agosto</span> -->
       <span class="periodo-gh__periodo">
         {{ currentSunday.getDate() + 1 }} - {{ currentSaturday.getDate() }}
         {{ currentSaturday | monthNameShort }}
@@ -32,27 +31,45 @@
       </svg>
     </div>
     <div class="periodo-gh__calendario">
-      <span class="periodo-gh__item">
+      <span
+        class="periodo-gh__item"
+        :class="{ 'periodo-gh__item--active': isToday(sumDays(currentSunday, 1)) }"
+      >
         <span>SEG</span>
         <span>{{ currentSunday | sumDays(1) | getDate }}</span>
       </span>
-      <span class="periodo-gh__item periodo-gh__item--active">
+      <span
+        class="periodo-gh__item"
+        :class="{ 'periodo-gh__item--active': isToday(sumDays(currentSunday, 2)) }"
+      >
         <span>TER</span>
         <span>{{ currentSunday | sumDays(2) | getDate }}</span>
       </span>
-      <span class="periodo-gh__item">
+      <span
+        class="periodo-gh__item"
+        :class="{ 'periodo-gh__item--active': isToday(sumDays(currentSunday, 3)) }"
+      >
         <span>QUA</span>
         <span>{{ currentSunday | sumDays(3) | getDate }}</span>
       </span>
-      <span class="periodo-gh__item">
+      <span
+        class="periodo-gh__item"
+        :class="{ 'periodo-gh__item--active': isToday(sumDays(currentSunday, 4)) }"
+      >
         <span>QUI</span>
         <span>{{ currentSunday | sumDays(4) | getDate }}</span>
       </span>
-      <span class="periodo-gh__item">
+      <span
+        class="periodo-gh__item"
+        :class="{ 'periodo-gh__item--active': isToday(sumDays(currentSunday, 5)) }"
+      >
         <span>SEX</span>
         <span>{{ currentSunday | sumDays(5) | getDate }}</span>
       </span>
-      <span class="periodo-gh__item">
+      <span
+        class="periodo-gh__item"
+        :class="{ 'periodo-gh__item--active': isToday(sumDays(currentSunday, 6)) }"
+      >
         <span>SAB</span>
         <span>{{ currentSunday | sumDays(6) | getDate }}</span>
       </span>
@@ -63,6 +80,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import DateUtils from "@/service/DateUtils";
+import { Store } from "@/store";
 
 @Component({
   filters: {
@@ -74,22 +92,42 @@ import DateUtils from "@/service/DateUtils";
   },
 })
 export default class PeriodoGH extends Vue {
+  private storeState = Store.state;
   private currentSunday = DateUtils.getSunday(new Date());
+  private sumDays = DateUtils.sumDays;
 
   get currentSaturday(): Date {
     return DateUtils.getSaturday(this.currentSunday);
   }
 
   prevWeek(): void {
+    // const today = new Date();
+    const today = this.storeState.now;
+    const todaySunday = DateUtils.getSunday(today);
     const date = new Date(this.currentSunday);
     date.setDate(date.getDate() - 7);
-    this.currentSunday = date;
+    const dateSunday = DateUtils.getSunday(date);
+
+    const dateSundayIsAfterTodaySunday = dateSunday >= todaySunday;
+    if (dateSundayIsAfterTodaySunday) {
+      this.currentSunday = date;
+    }
   }
 
   nextWeek(): void {
     const date = new Date(this.currentSunday);
     date.setDate(date.getDate() + 7);
     this.currentSunday = date;
+  }
+
+  isToday(date: Date): boolean {
+    // const today = new Date();
+    const today = this.storeState.now;
+    return (
+      date.getDate() == today.getDate() &&
+      date.getMonth() == today.getMonth() &&
+      date.getFullYear() == today.getFullYear()
+    );
   }
 }
 </script>
